@@ -37,7 +37,7 @@ async function getShows(urls) {
 
 async function search(req, res) {
   const showsURLs = [];
-  const searchURL = `https://www.imdb.com/find?q=${req.query.q.trim().replace(/ /g, '+')}`;
+  const searchURL = `https://www.imdb.com/find?q=${req.query.q.trim().replace(/ /g, '+')}&title_type=feature`;
 
   let $ = null;
 
