@@ -1,18 +1,25 @@
 {
   "name": "web-spider",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "a web scraping tutorial",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon src/server.js"
   },
   "author": "Jonathan Cotta da Silva.",
   "license": "MPL-2.0",
   "dependencies": {
-    "bluebird": "^3.5.1",
+    "axios": "^0.18.0",
     "cheerio": "^1.0.0-rc.2",
     "express": "^4.16.3",
-    "request": "^2.87.0",
-    "request-promise": "^4.2.2"
-  }
+    "helmet": "^3.15.0",
+    "morgan": "^1.9.1"
+  },
+  "devDependencies": {
+    "eslint": "4.19.1",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "nodemon": "^1.18.9"
+  },
+  "repository": "https://gitlab.com/JonathanCotta/node-spider-imdb.git"
 }
