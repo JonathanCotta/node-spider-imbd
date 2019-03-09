@@ -26,7 +26,7 @@ yarn start
 
 ### URL example
 ```
-http://localhost:8888/api/imdb/search/?q=top+gun
+http://localhost:8888/api/v1/imdb/search/?q=top+gun
 ```
 
 ## License
