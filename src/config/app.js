@@ -22,4 +22,8 @@ consign({ cwd: 'src' })
   .include('routes')
   .into(app);
 
+app.get('*', (req, res) => (
+  res.status(404).json({ error: 404, msg: 'Path not found' })
+));
+
 module.exports = app;
