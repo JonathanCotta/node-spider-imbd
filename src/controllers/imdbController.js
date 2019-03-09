@@ -1,43 +1,38 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
 
-async function getShows(urls) {
+function getShows(urls = []) {
   return new Promise((resolve, reject) => {
-    if (!urls) reject();
+    if (urls.length === 0) reject();
 
-    const results = [];
-    let $ = null;
+    const result = urls.map(async (url) => {
+      const { data } = await axios.get(url);
 
-    urls.forEach((url) => {
-      axios.get(url)
-        .then((response) => {
-          $ = cheerio.load(response.data);
-          results.push({
-            title: $('.title_wrapper h1')
-              .children()
-              .remove()
-              .end()
-              .text()
-              .trim(),
-            originalTitle: $('.originalTitle')
-              .children()
-              .remove()
-              .end()
-              .text(),
-            release: $("a[title='See more release dates']").text().trim(),
-            rating: $("span[itemprop='ratingValue']").text(),
-          });
-          console.log(results);
-          if (results.length === urls.length) resolve(results);
-        })
-        .catch(err => reject(err));
+      const $ = cheerio.load(data);
+
+      const html = $('script[type="application/ld+json"]').html();
+
+      const {
+        name,
+        genre,
+        datePublished,
+        aggregateRating,
+      } = JSON.parse(html);
+
+      return {
+        name,
+        genre,
+        datePublished,
+        rating: aggregateRating ? aggregateRating.ratingValue : '',
+      };
     });
+
+    resolve(Promise.all(result));
   });
 }
 
 async function search(req, res) {
-  const showsURLs = [];
-  const searchURL = `https://www.imdb.com/find?q=${req.query.q.trim().replace(/ /g, '+')}&title_type=feature`;
+  const searchURL = `https://www.imdb.com/search/title?title=${req.query.q.trim().replace(/ /g, '+')}&title_type=feature`;
 
   let $ = null;
 
@@ -45,14 +40,10 @@ async function search(req, res) {
     .then((response) => {
       $ = cheerio.load(response.data);
 
-      $('.result_text a').each((i, el) => {
-        showsURLs.push(`https://www.imdb.com${$(el).prop('href')}`);
-      });
-
-      return showsURLs;
+      return $('.lister-item-header a').map((i, el) => (`https://www.imdb.com${$(el).prop('href')}`)).get();
     })
     .then(urls => getShows(urls))
-    .then(result => res.status(200).json({ result }))
+    .then(result => res.status(200).json(result))
     .catch(err => res.status(500).json(err));
 }
 
