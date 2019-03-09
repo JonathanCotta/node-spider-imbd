@@ -1,8 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const helmet = require('helmet');
-
-const routes = require('../routes');
+const consign = require('consign');
 
 const app = express();
 
@@ -19,6 +18,8 @@ app.use(helmet.xssFilter());
 app.use(helmet.noSniff());
 app.disable('x-powered-by');
 
-app.use('/api', routes);
+consign({ cwd: 'src' })
+  .include('routes')
+  .into(app);
 
 module.exports = app;
