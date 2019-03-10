@@ -43,7 +43,7 @@ http://localhost:8888/api/v1/imdb/search/?q=top+gun
 | GET | /api/v1/imdb/search/games |
 | GET | /api/v1/imdb/search/short |
 | GET | /api/v1/imdb/search/documentary |
-```
+
 
 ## License
 
