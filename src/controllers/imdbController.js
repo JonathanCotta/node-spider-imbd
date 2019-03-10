@@ -1,7 +1,7 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
 
-function getShows(urls = []) {
+function getPages(urls = []) {
   return new Promise((resolve, reject) => {
     if (urls.length === 0) reject();
 
@@ -31,22 +31,131 @@ function getShows(urls = []) {
   });
 }
 
-async function search(req, res) {
-  const searchURL = `https://www.imdb.com/search/title?title=${req.query.q.trim().replace(/ /g, '+')}&title_type=feature`;
+function search(title, type) {
+  const cleanTitle = title.trim().replace(/ /g, '+');
+  const searchURL = `https://www.imdb.com/search/title?title=${cleanTitle}&title_type=${type}`;
 
   let $ = null;
 
-  axios.get(searchURL)
-    .then((response) => {
-      $ = cheerio.load(response.data);
+  return axios.get(searchURL)
+    .then(({ data }) => {
+      $ = cheerio.load(data);
 
       return $('.lister-item-header a').map((i, el) => (`https://www.imdb.com${$(el).prop('href')}`)).get();
     })
-    .then(urls => getShows(urls))
-    .then(result => res.status(200).json(result))
-    .catch(err => res.status(500).json(err));
+    .then(urls => getPages(urls));
+}
+
+// Cinema
+async function movies(req, res) {
+  try {
+    const { query: { title } } = req;
+    const result = await search(title, 'feature');
+
+    return res.status(200).json(result);
+  } catch (err) {
+    return res.status(500).json(err);
+  }
+}
+
+// TV
+async function tvMovies(req, res) {
+  try {
+    const { query: { title } } = req;
+    const result = await search(title, 'tv_movie');
+
+    return res.status(200).json(result);
+  } catch (err) {
+    return res.status(500).json(err);
+  }
+}
+
+async function tvShort(req, res) {
+  try {
+    const { query: { title } } = req;
+    const result = await search(title, 'tv_short');
+
+    return res.status(200).json(result);
+  } catch (err) {
+    return res.status(500).json(err);
+  }
+}
+
+async function tvSpecial(req, res) {
+  try {
+    const { query: { title } } = req;
+    const result = await search(title, 'tv_special');
+
+    return res.status(200).json(result);
+  } catch (err) {
+    return res.status(500).json(err);
+  }
+}
+
+async function tvSeries(req, res) {
+  try {
+    const { query: { title } } = req;
+    const result = await search(title, 'tv_series');
+
+    return res.status(200).json(result);
+  } catch (err) {
+    return res.status(500).json(err);
+  }
+}
+
+async function tvMiniseries(req, res) {
+  try {
+    const { query: { title } } = req;
+    const result = await search(title, 'tv_miniseries');
+
+    return res.status(200).json(result);
+  } catch (err) {
+    return res.status(500).json(err);
+  }
+}
+
+// Others
+async function games(req, res) {
+  try {
+    const { query: { title } } = req;
+    const result = await search(title, 'video_games');
+
+    return res.status(200).json(result);
+  } catch (err) {
+    return res.status(500).json(err);
+  }
+}
+
+async function short(req, res) {
+  try {
+    const { query: { title } } = req;
+    const result = await search(title, 'short');
+
+    return res.status(200).json(result);
+  } catch (err) {
+    return res.status(500).json(err);
+  }
+}
+
+async function documentary(req, res) {
+  try {
+    const { query: { title } } = req;
+    const result = await search(title, 'documentary');
+
+    return res.status(200).json(result);
+  } catch (err) {
+    return res.status(500).json(err);
+  }
 }
 
 module.exports = {
-  search,
+  movies,
+  tvShort,
+  tvMovies,
+  tvSeries,
+  tvSpecial,
+  tvMiniseries,
+  games,
+  short,
+  documentary,
 };
